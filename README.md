@@ -83,7 +83,8 @@ The bucket was then deliberately misconfigured by:
   ]
 }
 ```
-
+![Bucket Created](images/01-bucket-created.png)
+![Files Uploaded](images/02-files-uploaded.png)
 > **Note:** AWS now blocks public access by default. Making a bucket public requires actively overriding multiple protections — which is why misconfigurations like this are typically the result of deliberate but poorly considered decisions, not accidents.
 
 ---
@@ -97,7 +98,8 @@ https://patrick-security-project-2026.s3.amazonaws.com/fake-credentials.txt
 ```
 
 Accessing this URL in an incognito browser window returned the full file contents, simulating what an attacker or unauthorized user would see. This mirrors real-world S3 exposure incidents where sensitive data is discovered by scanning for publicly accessible buckets.
-
+![Public Policy Confirmed](images/03-public-policy-confirmed.png)
+![Credentials Exposed in Browser](images/04-credentials-exposed-browser.png)
 ---
 
 ### Stage 3 — Detection (Automated Python Audit Script)
@@ -135,7 +137,7 @@ ACTION REQUIRED - Publicly exposed buckets:
 ```
 
 The script correctly identified the one misconfigured bucket out of seven while marking the others as secure. See `s3_public_bucket_audit.py` for the full script.
-
+![Audit Script Vulnerable](images/05-audit-script-vulnerable.png)
 ---
 
 ### Stage 4 — Remediation
@@ -157,7 +159,8 @@ aws s3api put-public-access-block \
 ```
 
 After remediation, attempting to access the bucket URL returned an **Access Denied** error, and re-running the audit script confirmed the bucket now shows as **SECURE**.
-
+![Audit Script Secure](images/06-audit-script-secure.png)
+![Access Denied Browser](images/07-access-denied-browser.png)
 ---
 
 ### Stage 5 — Preventative Control (AWS Config)
@@ -171,7 +174,9 @@ Configured AWS Config with the `s3-bucket-public-read-prohibited` managed rule t
 - Evaluation mode: Detective
 
 > **Detective vs. Proactive:** Detective mode flags violations after they occur. In a production environment this could be extended with a Lambda-backed auto-remediation action that automatically re-enables Block Public Access when a violation is detected — removing the need for manual intervention.
-
+![AWS Config Dashboard](images/08-aws-config-dashboard.png)
+![AWS Config Rule](images/09-aws-config-rule.png)
+![AWS Config Active](images/10-aws-config-active.png)
 ---
 
 ## Key Takeaways
